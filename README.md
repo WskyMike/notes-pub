@@ -414,6 +414,59 @@ function fetchWithId<T extends { id: number }>(): Promise<T[]> {
 
 <br> 
 
+## Типизация асинхронных функций (async/await)
+
+**Общие правила:**
+- Асинхронная функция всегда возвращает `Promise<T>`, где `T` — тип возвращаемого значения.
+- Тип результата должен быть указан явно для читаемости и надёжности.
+
+**Примеры:**
+
+```ts
+// Функция возвращает Promise<number>
+async function getNumber(): Promise<number> {
+  return 42;
+}
+
+// Можно использовать типизацию с дженериками
+async function fetchUser<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  return res.json() as Promise<T>;
+}
+
+// Асинхронная функция без возвращаемого значения
+async function logMessage(msg: string): Promise<void> {
+  await someAsyncLogFunction(msg);
+}
+```
+
+**Варианты вызова с await:**
+
+```ts
+const value: number = await getNumber();
+const user = await fetchUser<User>("api/user");
+```
+
+**Типизация промиса вне async/await:**
+
+```ts
+const resultPromise: Promise<number> = getNumber();
+resultPromise.then((n: number) => { /* ... */ });
+```
+
+**Особенности:**
+- Если функция ничего не возвращает, используем `Promise<void>`.
+- Если функция возвращает массив, используем `Promise<Type[]>`.
+- Для универсальных функций — `Promise<T>` с дженериками и ограничениями (`extends`).
+
+---
+
+**Кратко:**  
+- Всегда явно указывай тип после `Promise<...>`, если тип не однозначен.
+- `async function fn(): Promise<Type> { ... }` — стандартная типизация асинхронных функций.
+
+<br> 
+
 ## Типизация Error и других стандартных ошибок
 
 ```ts
