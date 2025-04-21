@@ -1,6 +1,60 @@
-### Расширенные правила применения типизации TypeScript (с примерами вариантов)
+## Памятка применения типизации TypeScript (с примерами вариантов)
 
-## 1. Переменные
+<br> 
+
+- [Переменные](#переменные)
+- [Функции](#функции)
+- [Объекты и массивы](#объекты-и-массивы)
+- [Вызов функций](#вызов-функций)
+- [Применение TypeScript в React](#применение-typescript-в-react)
+  - [Компоненты-функции](#компоненты-функции)
+  - [Состояния, ссылки, обработчики](#состояния-ссылки-обработчики)
+  - [useReducer с типами](#usereducer-с-типами)
+- [Типизация стандартных коллекций](#типизация-стандартных-коллекций)
+  - [Map](#map)
+  - [Set](#set)
+- [Типизация стандартных объектов](#типизация-стандартных-объектов)
+  - [Date](#date)
+- [Типизация Promise](#типизация-promise)
+- [Типизация Error и других стандартных ошибок](#типизация-error-и-других-стандартных-ошибок)
+- [Типизация стандартных функций и структур](#типизация-стандартных-функций-и-структур)
+  - [RegExp](#regexp)
+  - [JSON](#json)
+- [Типизация глобальных структур и утилит](#типизация-глобальных-структур-и-утилит)
+  - [Event, HTMLElement и прочее из DOM API](#event-htmlelement-и-прочее-из-dom-api)
+- [Типизация функций-конструкторов и классов](#типизация-функций-конструкторов-и-классов)
+- [Типизация Symbol и BigInt](#типизация-symbol-и-bigint)
+- [Типизация ReadonlyMap, ReadonlySet](#типизация-readonlymap-readonlyset)
+- [Типизация WeakMap и WeakSet](#типизация-weakmap-и-weakset)
+- [Типизация URL и URLSearchParams](#типизация-url-и-urlsearchparams)
+- [Типизация ArrayBuffer, DataView, TypedArray](#типизация-arraybuffer-dataview-typedarray)
+- [Типизация File, Blob, FormData](#типизация-file-blob-formdata)
+
+<br>
+<br> 
+
+>[!NOTE]
+> #### Где обычно НЕ надо указывать тип:
+>- Внутри тела функции для временных переменных, если тип выводится автоматически.
+>- При вызове функций.
+>- При инициализации переменной, если значение сразу ясно:
+>```ts
+>let sum = 5 + 3; // sum: number
+>```
+
+<br>
+<br> 
+
+> [!TIP]
+>### Универсальные советы
+>- **Указывай типы явно для параметров, возвращаемых значений, пропсов, сложных структур.**
+>- Используй именованные типы (type, interface) для читаемости и переиспользования.
+>- Используй дженерики для универсальных функций и структур.
+>- Используй утилиты (Partial, Required и др.) для гибкости типов.
+
+<br> 
+
+## Переменные
 
 **Базовая типизация:**
 ```ts
@@ -56,7 +110,9 @@ function fail(): never { throw new Error("fail"); }
 
 ---
 
-## 2. Функции
+<br> 
+
+## Функции
 
 **Типизация параметров и возвращаемого значения:**
 ```ts
@@ -102,10 +158,11 @@ function format(input: string | number): string {
 type MathOp = (a: number, b: number) => number;
 const multiply: MathOp = (a, b) => a * b;
 ```
-
 ---
 
-## 3. Объекты и массивы
+<br> 
+
+## Объекты и массивы
 
 **Базовые типы массивов и объектов:**
 ```ts
@@ -154,7 +211,9 @@ type UserWithoutEmail = Omit<User, "email">;
 
 ---
 
-## 4. Вызов функций
+<br> 
+
+## Вызов функций
 
 - При вызове функции отдельно указывать тип **не нужно** — TS проверит всё сам.
 - Однако, иногда можно уточнить тип через generic:
@@ -163,27 +222,9 @@ identity<string>("hello"); // явно указываем тип
 ```
 ---
 
-## 5. Где обычно НЕ надо указывать тип
+<br> 
 
-- Внутри тела функции для временных переменных, если тип выводится автоматически.
-- При вызове функций.
-- При инициализации переменной, если значение сразу ясно:
-```ts
-let sum = 5 + 3; // sum: number
-```
-
----
-
-## 6. Универсальные советы
-
-- **Указывай типы явно для параметров, возвращаемых значений, пропсов, сложных структур.**
-- Используй именованные типы (type, interface) для читаемости и переиспользования.
-- Используй дженерики для универсальных функций и структур.
-- Используй утилиты (Partial, Required и др.) для гибкости типов.
-
----
-
-## 7. Применение TypeScript в React
+## Применение TypeScript в React
 
 ### Компоненты-функции
 
@@ -254,4 +295,186 @@ function reducer(state: State, action: Action): State {
 
 const [state, dispatch] = useReducer(reducer, { count: 0 });
 ```
+---
 
+<br> 
+
+## Типизация стандартных коллекций
+
+### Map
+
+```ts
+const usersById: Map<number, string> = new Map();
+usersById.set(1, "Mike");
+usersById.set(2, "Anna");
+```
+- Первый generic-параметр — тип ключа, второй — тип значения.
+
+### Set
+
+```ts
+const uniqueIds: Set<number> = new Set([1, 2, 3]);
+const tags: Set<string> = new Set(["a", "b", "c"]);
+```
+- Generic-параметр — тип элементов множества.
+
+<br> 
+
+## Типизация стандартных объектов
+
+### Date
+
+```ts
+const now: Date = new Date();
+function formatDate(date: Date): string {
+  return date.toISOString();
+}
+```
+
+<br> 
+
+## Типизация Promise
+
+```ts
+const responsePromise: Promise<Response> = fetch("/api");
+const numberPromise: Promise<number> = Promise.resolve(42);
+
+function fetchData(): Promise<{ data: string }> {
+  return Promise.resolve({ data: "hello" });
+}
+```
+- Тип внутри Promise указывает, что будет передано в then/catch.
+
+**Promise с дженериками и extends:**
+```ts
+function fetchWithId<T extends { id: number }>(): Promise<T[]> {
+  // ...
+  return Promise.resolve([]);
+}
+```
+
+<br> 
+
+## Типизация Error и других стандартных ошибок
+
+```ts
+function throwError(): never {
+  throw new Error("Something went wrong");
+}
+
+try {
+  // ...
+} catch (e: unknown) {
+  if (e instanceof Error) {
+    console.error(e.message);
+  }
+}
+```
+- Для перехвата ошибок рекомендуется использовать `unknown` и делать проверку через `instanceof Error`.
+
+
+<br> 
+
+## Типизация стандартных функций и структур
+
+### RegExp
+
+```ts
+const pattern: RegExp = /hello/;
+function isMatch(str: string, regex: RegExp): boolean {
+  return regex.test(str);
+}
+```
+
+### JSON
+
+```ts
+const jsonString: string = '{"a":1}';
+const obj: unknown = JSON.parse(jsonString); // результат всегда unknown!
+```
+- После JSON.parse всегда лучше уточнять тип вручную (например, через type guard).
+
+
+<br> 
+
+## Типизация глобальных структур и утилит
+
+### Event, HTMLElement и прочее из DOM API
+
+```ts
+function onClick(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  // или, безопаснее:
+  if (e.target instanceof HTMLButtonElement) {
+    e.target.disabled = true;
+  }
+}
+```
+
+<br> 
+
+## Типизация функций-конструкторов и классов
+
+```ts
+class Person {
+  constructor(public name: string, public age: number) {}
+}
+const person: Person = new Person("John", 30);
+
+// Тип конструктора:
+type PersonConstructor = new (name: string, age: number) => Person;
+```
+
+<br> 
+
+## Типизация Symbol и BigInt
+
+```ts
+const uniqueKey: symbol = Symbol("key");
+const bigNumber: bigint = 12345678901234567890n;
+```
+<br> 
+
+## Типизация ReadonlyMap, ReadonlySet
+
+```ts
+const roles: ReadonlyMap<string, number> = new Map([["admin", 1]]);
+const types: ReadonlySet<string> = new Set(["a", "b"]);
+```
+<br> 
+
+## Типизация WeakMap и WeakSet
+
+```ts
+const weakMap: WeakMap<object, number> = new WeakMap();
+const weakSet: WeakSet<object> = new WeakSet();
+```
+
+<br> 
+
+## Типизация URL и URLSearchParams
+
+```ts
+const url: URL = new URL("https://example.com");
+const params: URLSearchParams = new URLSearchParams("?a=1&b=2");
+```
+<br> 
+
+## Типизация ArrayBuffer, DataView, TypedArray
+
+```ts
+const buffer: ArrayBuffer = new ArrayBuffer(8);
+const view: DataView = new DataView(buffer);
+const intArray: Int32Array = new Int32Array(buffer);
+```
+<br> 
+
+## Типизация File, Blob, FormData
+
+```ts
+const file: File = new File(["content"], "file.txt");
+const blob: Blob = new Blob(["hello"]);
+const form: FormData = new FormData();
+```
+
+---
